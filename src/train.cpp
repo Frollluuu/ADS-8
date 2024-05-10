@@ -1,59 +1,55 @@
 // Copyright 2021 NNTU-CS
 #include "train.h"
 
-Train::Train() : countOp(0), first(nullptr) {}
+Train::Train() {
+    first = new Cage;
+    first->prev = nullptr;
+    countOp = 0;
+    length = 0;
+    trule = 0;
+}
 
 void Train::addCage(bool light) {
-    // Создаем новый вагон
-    Cage *newCage = new Cage;
-    newCage->light = light;
-    newCage->next = newCage;
-    newCage->prev = newCage;
+    if (first->prev == nullptr) {
+        first->light = light;
+        first->prev = first;
+        first->next = first;
+    } else {
+        Cage* Temp = first->next;
+        first->next = new Cage;
+        first->next->prev = first;
 
-    // Если поезд пустой, новый вагон становится первым
-    if (!first) {
-        first = newCage;
-        return;
+        first = first->next;
+        Temp->prev = first;
+        first->next = Temp;
+        first->light = light;
     }
-
-    // Добавляем новый вагон в конец поезда
-    newCage->next = first;
-    newCage->prev = first->prev;
-    first->prev->next = newCage;
-    first->prev = newCage;
 }
 
 int Train::getLength() {
-    if (!first) {
-        return 0;
+    if (!first->light) {
+        first->light = true;
     }
-
-    Cage *current = first;
-    int length = 1;
-    while (current->next != first) {
-        current = current->next;
-        length++;
+    while (true) {
+        while (!first->next->light) {
+            first = first->next;
+            countOp++;
+            length++;
+        }
+        first->next->light = false;
+        countOp += 2;
+        trule = length + 1;
+        for (; length > 0; length--) {
+            first = first->prev;
+            countOp++;
+        }
+        if (first->light == false) {
+            break;
+        }
     }
-
-    return length;
+    return trule;
 }
 
 int Train::getOpCount() {
     return countOp;
-}
-
-ostream& operator<<(ostream& os, const Train& train) {
-    if (!train.first) {
-        os << "Поезд пустой";
-        return os;
-    }
-
-    Cage *current = train.first;
-    os << "Поезд:n";
-    do {
-        os << (current->light ? "свет включен" : "свет выключен") << "n";
-        current = current->next;
-    } while (current != train.first);
-
-    return os;
 }
