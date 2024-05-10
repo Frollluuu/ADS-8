@@ -3,13 +3,23 @@
 #include "train.h"
 
 int main() {
-  Train train;
-  int count = 60; // кол-во вагонов
+    // Создаем поезд
+    Train train;
 
-  while (count--)
+    // Добавляем вагоны
+    train.addCage(true);
+    train.addCage(false);
+    train.addCage(true);
     train.addCage(false);
 
-  std::cout << train.getLength() << std::endl;
-  std::cout << train.getOpCount() << std::endl;
-  return 0;
+    // Выводим информацию о поезде
+    cout << train << endl;
+
+    // Вычисляем длину поезда
+    cout << "Длина поезда: " << train.getLength() << endl;
+
+    // Вычисляем число переходов
+    cout << "Число переходов: " << train.getOpCount() << endl;
+
+    return 0;
 }
